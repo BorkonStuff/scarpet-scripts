@@ -1,4 +1,4 @@
-## Scarpet-scripts
+# Scarpet-scripts
 
 Collection of various scarpet scripts that might be useful to others besides me.
 
@@ -6,7 +6,7 @@ You need the [Carpet mod](https://www.curseforge.com/minecraft/mc-mods/carpet) t
 
 [See here](https://github.com/gnembon/fabric-carpet/wiki/Installing-carpet-scripts-in-your-world) for how to install scarpet scripts in your world. The simple instructions are: go to your save, make a directory called "scripts" if it doesn't exist, copy script there. Some scripts might need to be loaded manually in Minecraft with the command "/script load <name of script>".
 
-# Voids
+## Voids
 
 [voids.sc](voids.sc) contains the creative tool for managing multiple dimensions inside one creative world.
 The commands it provides are:
