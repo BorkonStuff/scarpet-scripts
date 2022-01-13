@@ -14,3 +14,5 @@ The commands it provides are:
  - `/voids add "Name of dimension" <biome>` - Just like above, but you can specify which biome the dimension should have.
  - `/voids tp "Name of dimension"` - Teleports player to the dimension. Beware, even though there should be a block under your feet where you teleport, Minecraft is sometimes buggy and you will fall to your death.
  - `/voids list` - Lists all managed dimensions with clickable teleport links.
+
+Quick explanation video: https://youtu.be/eF4W2_BvKCc
