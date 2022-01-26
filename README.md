@@ -16,3 +16,13 @@ The commands it provides are:
  - `/voids list` - Lists all managed dimensions with clickable teleport links.
 
 Quick explanation video: https://youtu.be/eF4W2_BvKCc
+
+## Vdist
+
+[vdist.sc](vdist.sc) contains a tool for coloring chunks based on hostile mobs for testing view distance settings.
+The commands are:
+ - `/vdist center <pos>` sets the position of the zombie villager.
+ - `/vdist c <pos>` color the chunk at position based on count of hostile mobs.
+ - `/vdist pscan <number of chunks>` teleport the player around in a 2*nX2*n area coloring chunks based on hostile mob count.
+
+Explanation video: https://youtu.be/tLIje9-RxN8
