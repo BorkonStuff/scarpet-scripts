@@ -72,6 +72,6 @@ __config() -> {
     },
     'arguments' -> {
         'name' -> { 'type' -> 'string' },
-        'biome' -> { 'type' -> 'biome', 'sugggest' -> biome() },
+        'biome' -> { 'type' -> 'biome', 'suggest' -> biome() },
     },
 };
