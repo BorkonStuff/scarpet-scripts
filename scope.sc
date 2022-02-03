@@ -9,6 +9,15 @@ global_probes = {};
 
 global_canvas_shapes = [];
 global_canvas_refresh = 20;
+
+global_probe_colors = [
+	0xff0000ff,
+	0x00ff00ff,
+	0x0000ffff,
+	0xff00ffff,
+	0xffff00ff,
+	0x00ffffff,
+];
 	
 create(pos) -> (
 	global_scope_pos = pos + [-0.1,0,0];
@@ -55,11 +64,11 @@ run_probes() -> (
 		put(get(_, 'buf'), o, p);
 		o = (o + 1) % global_buffer_sz;
 		put(_, 'off', o);
-		draw_probe(get(_, 'buf'), o);
+		draw_probe(get(_, 'buf'), o, get(global_probe_colors, _i % length(global_probe_colors)));
 	));
 );
 
-draw_probe(pbuf, o) -> (
+draw_probe(pbuf, o, color) -> (
 	shapes = [];
 	lastpos = [-0.1	,get(pbuf, o),0];
 	for(range(length(pbuf)), (
@@ -68,7 +77,7 @@ draw_probe(pbuf, o) -> (
 		pos = [ -0.1, v, _i * global_render_step];
 		shapes += [
 			'line', 1,
-			'color', 0xff0000ff,
+			'color', color,
 			'from', global_scope_pos + lastpos,
 			'to', global_scope_pos + pos,
 		];
