@@ -11,6 +11,8 @@ global_probes = {};
 global_canvas_shapes = [];
 global_canvas_refresh = 20;
 
+global_toggle_scroll = true;
+
 global_probe_colors = [
 	0xff0000ff,
 	0x00ff00ff,
@@ -70,6 +72,7 @@ run_probes() -> (
 );
 
 draw_probe(pbuf, o, color) -> (
+	if (!global_toggle_scroll, o = 0);
 	shapes = [];
 	lastpos = [-0.1	,get(pbuf, o),0];
 	for(range(length(pbuf)), (
@@ -85,6 +88,10 @@ draw_probe(pbuf, o, color) -> (
 		lastpos = pos;
 	));
 	draw_shape(shapes);
+);
+
+toggle_scroll() -> (
+	global_toggle_scroll = !global_toggle_scroll;
 );
 
 do_draw() -> (
@@ -104,5 +111,6 @@ __config() -> {
 		'pos <pos>' -> 'create',
 		'stop' -> 'stop',
 		'probe <pos> <name>' -> 'probe',
+		'toggle_scroll' -> 'toggle_scroll',
 	},
 };
