@@ -5,8 +5,7 @@ global_dim = null;
 global_render_step = 0.1;
 global_buffer_sz = 200;
 
-global_probe = [0,0,0];
-global_probe_buf = [];
+global_probes = {};
 
 global_canvas_shapes = [];
 global_canvas_refresh = 20;
@@ -35,8 +34,14 @@ create(pos) -> (
 	);
 );
 
-probe(pos) -> (
-	global_probe = pos;
+probe(pos, name) -> (
+	p = {
+		'pos' -> pos,
+		'buf' -> [0],
+		'off' -> 0,
+		'name' -> name,
+	};
+	put(global_probes, name, p);
 );
 
 stop() -> (
@@ -44,16 +49,23 @@ stop() -> (
 );
 
 run_probes() -> (
-	p = power(global_probe);
-	if (length(global_probe_buf) == global_buffer_sz, delete(global_probe_buf,0));
-	global_probe_buf += p;
+	for(values(global_probes), (
+		p = power(get(_, 'pos'));
+		o = get(_, 'off');
+		put(get(_, 'buf'), o, p);
+		o = (o + 1) % global_buffer_sz;
+		put(_, 'off', o);
+		draw_probe(get(_, 'buf'), o);
+	));
 );
 
-draw_probe(pbuf) -> (
+draw_probe(pbuf, o) -> (
 	shapes = [];
-	lastpos = [-0.1	,get(pbuf, 0),0];
-	for(pbuf, (
-		pos = [ -0.1, _, _i * global_render_step];
+	lastpos = [-0.1	,get(pbuf, o),0];
+	for(range(length(pbuf)), (
+		i = (_i + o) % global_buffer_sz;
+		v = get(pbuf, i);
+		pos = [ -0.1, v, _i * global_render_step];
 		shapes += [
 			'line', 1,
 			'color', 0xff0000ff,
@@ -68,7 +80,6 @@ draw_probe(pbuf) -> (
 do_draw() -> (
 	if ((tick_time() % global_canvas_refresh) == 0, draw_shape(global_canvas_shapes));
 	run_probes();
-	draw_probe(global_probe_buf);
 );
 
 __on_tick() -> (
@@ -82,7 +93,6 @@ __config() -> {
 	'commands' -> {
 		'pos <pos>' -> 'create',
 		'stop' -> 'stop',
-		'probe <pos>' -> 'probe',
+		'probe <pos> <name>' -> 'probe',
 	},
 };
-
