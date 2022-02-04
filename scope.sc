@@ -32,6 +32,10 @@ create(pos) -> (
 	rebuild_canvas_shapes();
 );
 
+probe_color(i) -> (
+	global_probe_colors:(i % length(global_probe_colors));
+);
+
 rebuild_canvas_shapes() -> (
 	global_canvas_shapes = [];
 	for(range(global_buf_sz/10 + 1),
@@ -55,15 +59,15 @@ rebuild_canvas_shapes() -> (
 		global_canvas_shapes += [
 			'label', global_canvas_refresh,
 			'pos', global_scope_pos + [0, 15 - _i, global_buf_sz * global_render_step + 1],
-			'color', get(global_probe_colors, _i % length(global_probe_colors)),
-			'text', get(_, 'name'),
+			'color', probe_color(_i),
+			'text', _:'name',
 			'size', 15,
 		];
 		global_canvas_shapes += [
 			'line', global_canvas_refresh,
-			'color', get(global_probe_colors, _i % length(global_probe_colors)),
+			'color', probe_color(_i),
 			'from', global_scope_pos + [0, 15 - _i, global_buf_sz * global_render_step + 1],
-			'to', get(_, 'pos'),
+			'to', _:'pos',
 		];
 	);
 );
@@ -71,12 +75,11 @@ rebuild_canvas_shapes() -> (
 probe(pos, name) -> (
 	b = [];
 	for(range(global_buf_sz), b += 0);
-	p = {
+	global_probes:name = {
 		'pos' -> pos,
 		'buf' -> b,
 		'name' -> name,
 	};
-	put(global_probes, name, p);
 	rebuild_canvas_shapes();
 );
 
@@ -88,20 +91,18 @@ run_probes() -> (
 	o = global_buf_off;
 	global_buf_off = (o + 1) % global_buf_sz;
 	for(values(global_probes), (
-		p = power(get(_, 'pos'));
-		put(get(_, 'buf'), o, p);
-		draw_probe(get(_, 'buf'), global_buf_off, get(global_probe_colors, _i % length(global_probe_colors)));
+		_:'buf':o = power(_:'pos');
+		draw_probe(_:'buf', global_buf_off, global_probe_colors:(_i % length(global_probe_colors)));
 	));
 );
 
 draw_probe(pbuf, o, color) -> (
 	if (!global_toggle_scroll, o = 0);
 	shapes = [];
-	lastpos = [-0.1	,get(pbuf, o),0];
+	lastpos = [-0.1	,pbuf:o,0];
 	for(range(length(pbuf)), (
 		i = (_i + o) % global_buf_sz;
-		v = get(pbuf, i);
-		pos = [ -0.1, v, _i * global_render_step];
+		pos = [ -0.1, pbuf:i, _i * global_render_step];
 		shapes += [
 			'line', 1,
 			'color', color,
