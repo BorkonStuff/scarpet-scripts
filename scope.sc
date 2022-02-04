@@ -15,6 +15,7 @@ global_canvas_refresh = 20;
 global_toggle_scroll = true;
 global_single_mode = false;
 global_collect_enable = true;
+global_draw_enable = true;
 
 // color of the grid lines, a little bit of transparency seems to make things look just a tiny bit better.
 global_grid_color = 0x0000009f;
@@ -24,6 +25,7 @@ global_grid_color = 0x0000009f;
 // (y) - redstone power level (more or less)
 // (z) - ticks.
 global_scale_vec = [1,1,0.1];
+global_font_size = 15;
 
 // the distance in ticks between vertical grid lines.
 global_vert_grid_stride = 10;
@@ -89,7 +91,7 @@ rebuild_canvas_shapes() -> (
 			'pos', p([-0.2, 15 - _i, global_buf_sz + 10]),
 			'color', probe_color(_i),
 			'text', _:'name',
-			'size', 15,
+			'size', global_font_size,
 		];
 		global_canvas_shapes += [
 			'line', global_canvas_refresh,
@@ -176,6 +178,10 @@ toggle_scroll() -> (
 	global_toggle_scroll = !global_toggle_scroll;
 );
 
+toggle_draw() -> (
+	global_draw_enable = !global_draw_enable;
+);
+
 vert_grid_res(n) -> (
 	global_vert_grid_stride = n;
 	rebuild_canvas_shapes();
@@ -192,12 +198,13 @@ do_draw() -> (
 	if ((tick_time() % global_canvas_refresh) == 0, (
 		if(global_scale_probe_enabled && power(global_scale_probe) != global_scale_probe_last, (
 			global_scale_probe_last = power(global_scale_probe);
-			global_scale_vec = [1,1,0.1] * (global_scale_probe_last/8.0);
+			scale = (global_scale_probe_last/8.0);
+			global_scale_vec = [1,1,0.1] * scale;
+			global_font_size = 15 * scale;
 			rebuild_canvas_shapes();
 		));
 		draw_shape(global_canvas_shapes);
 	));
-	if (global_collect_enable, run_probes());
 	draw_probes();
 );
 
@@ -211,7 +218,11 @@ reset() -> (
 
 __on_tick() -> (
 	if (!global_enabled, return());
-	in_dimension(global_dim, do_draw());
+	in_dimension(global_dim, (
+		if (global_collect_enable, run_probes());
+		if (global_draw_enable, do_draw());
+	));
+
 );
 
 __config() -> {
@@ -227,6 +238,7 @@ __config() -> {
 		'trigger <name>' -> 'set_trigger',
 		'vgrid <ticks>' -> 'vert_grid_res', 
 		'sprobe <pos>' -> 'scale_probe',
+		'toggle_draw' -> 'toggle_draw',
 	},
 	'arguments' -> {
 		'ticks' -> { 'type' -> 'int', 'min' -> 1, 'max' -> 200},
