@@ -56,7 +56,13 @@ rebuild_canvas_shapes() -> (
 			'color', get(global_probe_colors, _i % length(global_probe_colors)),
 			'text', get(_, 'name'),
 			'size', 15,
-		]
+		];
+		global_canvas_shapes += [
+			'line', global_canvas_refresh,
+			'color', get(global_probe_colors, _i % length(global_probe_colors)),
+			'from', global_scope_pos + [0, 15 - _i, global_buf_sz * global_render_step + 1],
+			'to', get(_, 'pos'),
+		];
 	);
 );
 
