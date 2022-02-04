@@ -81,14 +81,6 @@ rebuild_canvas_shapes() -> (
 );
 
 
-// Activate a single 200 (global_buf_sz) tick recording of signals and then stop.
-single_recording() -> (
-	// Empty all buffers
-	for (values(global_probes), _:'buf' = map(_:'buf', 0));
-	global_buf_off = 0;
-	global_single_mode = true;
-);
-
 probe(pos, name) -> (
 	b = [];
 	for(range(global_buf_sz), b += 0);
@@ -96,6 +88,7 @@ probe(pos, name) -> (
 		'pos' -> pos,
 		'buf' -> b,
 		'name' -> name,
+		'trigger' -> false,
 	};
 	rebuild_canvas_shapes();
 );
@@ -108,7 +101,19 @@ run_probes() -> (
 	o = global_buf_off;
 	global_buf_off = (o + 1) % global_buf_sz;
 	if (global_buf_off == 0 && global_single_mode, global_collect_enable = false);
-	for(values(global_probes), _:'buf':o = power(_:'pos'));
+	for(values(global_probes),
+		p = power(_:'pos');
+		_:'buf':o = p;
+		if(_:'trigger' && p != 0,(
+			_:'trigger' = false;
+			// XXX - This part is really icky, single_recording resets all the buffers
+			// XXX - including buffers already probed this tick, so to get it right
+			// XXX - we call ourselves recursively and then return.
+			single_recording();
+			run_probes();
+			return();
+		));
+	);
 );
 
 draw_probes() -> (
@@ -135,6 +140,18 @@ draw_probe(pbuf, o, color) -> (
 	draw_shape(shapes);
 );
 
+set_trigger(name) -> (
+	global_probes:name:'trigger' = true;
+);
+
+// Activate a single 200 (global_buf_sz) tick recording of signals and then stop.
+single_recording() -> (
+	// Empty all buffers
+	for (values(global_probes), _:'buf' = map(_:'buf', 0));
+	global_buf_off = 0;
+	global_single_mode = true;
+);
+
 toggle_scroll() -> (
 	global_toggle_scroll = !global_toggle_scroll;
 );
@@ -149,6 +166,8 @@ reset() -> (
 	global_toggle_scroll = true;
 	global_collect_enable = true;
 	global_single_mode = false;
+	for (values(global_probes), _:'buf' = map(_:'buf', 0));
+	global_buf_off = 0;
 );
 
 __on_tick() -> (
@@ -166,5 +185,6 @@ __config() -> {
 		'toggle_scroll' -> 'toggle_scroll',
 		'reset' -> 'reset',
 		'single' -> 'single_recording',
+		'trigger <name>' -> 'set_trigger',
 	},
 };
