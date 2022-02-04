@@ -38,6 +38,10 @@ global_probe_colors = [
 	0xffff009f,
 	0x00ffff9f,
 ];
+
+global_scale_probe_last = -1;
+global_scale_probe_enabled = false;
+global_scale_probe = [0,0,0];
 	
 create(pos) -> (
 	global_scope_pos = pos + [-0.1,0,0];
@@ -82,7 +86,7 @@ rebuild_canvas_shapes() -> (
 	for(values(global_probes),
 		global_canvas_shapes += [
 			'label', global_canvas_refresh,
-			'pos', p([0, 15 - _i, global_buf_sz + 10]),
+			'pos', p([-0.2, 15 - _i, global_buf_sz + 10]),
 			'color', probe_color(_i),
 			'text', _:'name',
 			'size', 15,
@@ -141,10 +145,10 @@ draw_probes() -> (
 draw_probe(pbuf, o, color) -> (
 	if (!global_toggle_scroll, o = 0);
 	shapes = [];
-	lastpos = [-0.1	,pbuf:o,0];
+	lastpos = [-0.01,pbuf:o,0];
 	for(range(length(pbuf)), (
 		i = (_i + o) % global_buf_sz;
-		pos = [ -0.1, pbuf:i, _i];
+		pos = [ -0.01, pbuf:i, _i];
 		shapes += [
 			'line', 1,
 			'color', color,
@@ -177,8 +181,22 @@ vert_grid_res(n) -> (
 	rebuild_canvas_shapes();
 );
 
+// Just some bling for fun in the showcase video, don't use, it's bad for performance.
+scale_probe(pos) -> (
+	global_scale_probe_enabled = true;
+	global_scale_probe = pos;
+	global_canvas_refresh = 4;
+);
+
 do_draw() -> (
-	if ((tick_time() % global_canvas_refresh) == 0, draw_shape(global_canvas_shapes));
+	if ((tick_time() % global_canvas_refresh) == 0, (
+		if(global_scale_probe_enabled && power(global_scale_probe) != global_scale_probe_last, (
+			global_scale_probe_last = power(global_scale_probe);
+			global_scale_vec = [1,1,0.1] * (global_scale_probe_last/8.0);
+			rebuild_canvas_shapes();
+		));
+		draw_shape(global_canvas_shapes);
+	));
 	if (global_collect_enable, run_probes());
 	draw_probes();
 );
@@ -208,6 +226,7 @@ __config() -> {
 		'single' -> 'single_recording',
 		'trigger <name>' -> 'set_trigger',
 		'vgrid <ticks>' -> 'vert_grid_res', 
+		'sprobe <pos>' -> 'scale_probe',
 	},
 	'arguments' -> {
 		'ticks' -> { 'type' -> 'int', 'min' -> 1, 'max' -> 200},
