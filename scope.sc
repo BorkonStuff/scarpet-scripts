@@ -2,7 +2,6 @@ global_scope_pos = [0,0,0];
 global_enabled = false;
 global_dim = null;
 
-global_render_step = 0.1;
 global_buf_sz = 200;
 global_buf_off = 0;
 
@@ -16,6 +15,16 @@ global_single_mode = false;
 global_collect_enable = true;
 
 global_grid_color = 0x0000009f;
+
+// scale internal coordinates to world coordinates, the three scalars in the vector are:
+// (x) - rendering depth, used to decide what renders on "top" of what.
+// (y) - redstone power level (more or less)
+// (z) - ticks.
+global_scale_vec = [1,1,0.1];
+
+// the distance in ticks between vertical grid lines.
+global_vert_grid_stride = 10;
+
 
 global_probe_colors = [
 	0xff00009f,
@@ -39,19 +48,26 @@ probe_color(i) -> (
 );
 
 
-// Scale and translate the internal [0,0,0] -> [1,16,21] rendering range to whatever ends up rendered in the world.
+// Scale and translate the internal [0,0,0] -> [1,16,210] rendering range to whatever ends up rendered in the world.
 p(pos) -> (
-	global_scope_pos + pos;
+	global_scope_pos + pos * global_scale_vec;
 );
 
 rebuild_canvas_shapes() -> (
 	global_canvas_shapes = [];
-	for(range(global_buf_sz/10 + 1),
+
+	global_vert_grid_stride = 10;
+
+	nlines = global_buf_sz/global_vert_grid_stride;
+
+	global_scale_vec = [1,1,0.1];
+
+	for(range(nlines + 1),
 		global_canvas_shapes += [
 			'line', global_canvas_refresh,
 			'color', global_grid_color,
-			'from', p([0, 0, _i * 10 * global_render_step]),
-			'to', p([0, 16, _i * 10 * global_render_step]),
+			'from', p([0, 0, _i * global_vert_grid_stride]),
+			'to', p([0, 16, _i * global_vert_grid_stride]),
 		]
 	);
 	for(range(17),
@@ -59,14 +75,14 @@ rebuild_canvas_shapes() -> (
 			'line', global_canvas_refresh,
 			'color', global_grid_color,
 			'from', p([0,_i, 0]),
-			'to', p([0,_i, global_buf_sz * global_render_step]),
+			'to', p([0,_i, global_buf_sz]),
 		]
 	);
 
 	for(values(global_probes),
 		global_canvas_shapes += [
 			'label', global_canvas_refresh,
-			'pos', p([0, 15 - _i, global_buf_sz * global_render_step + 1]),
+			'pos', p([0, 15 - _i, global_buf_sz + 10]),
 			'color', probe_color(_i),
 			'text', _:'name',
 			'size', 15,
@@ -74,7 +90,7 @@ rebuild_canvas_shapes() -> (
 		global_canvas_shapes += [
 			'line', global_canvas_refresh,
 			'color', probe_color(_i),
-			'from', p([0, 15 - _i, global_buf_sz * global_render_step + 1]),
+			'from', p([0, 15 - _i, global_buf_sz + 10]),
 			'to', _:'pos' + [0.5,0.5,0.5],
 		];
 	);
@@ -128,7 +144,7 @@ draw_probe(pbuf, o, color) -> (
 	lastpos = [-0.1	,pbuf:o,0];
 	for(range(length(pbuf)), (
 		i = (_i + o) % global_buf_sz;
-		pos = [ -0.1, pbuf:i, _i * global_render_step];
+		pos = [ -0.1, pbuf:i, _i];
 		shapes += [
 			'line', 1,
 			'color', color,
