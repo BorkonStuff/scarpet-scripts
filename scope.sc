@@ -27,6 +27,10 @@ create(pos) -> (
 	global_enabled = true;
 	global_dim = current_dimension();
 
+	rebuild_canvas_shapes();
+);
+
+rebuild_canvas_shapes() -> (
 	global_canvas_shapes = [];
 	for(range(global_buf_sz/10 + 1),
 		global_canvas_shapes += [
@@ -44,6 +48,16 @@ create(pos) -> (
 			'to', global_scope_pos + [0,_i, global_buf_sz * global_render_step],
 		]
 	);
+
+	for(values(global_probes),
+		global_canvas_shapes += [
+			'label', global_canvas_refresh,
+			'pos', global_scope_pos + [0, 15 - _i, global_buf_sz * global_render_step + 1],
+			'color', get(global_probe_colors, _i % length(global_probe_colors)),
+			'text', get(_, 'name'),
+			'size', 15,
+		]
+	);
 );
 
 probe(pos, name) -> (
@@ -55,6 +69,7 @@ probe(pos, name) -> (
 		'name' -> name,
 	};
 	put(global_probes, name, p);
+	rebuild_canvas_shapes();
 );
 
 stop() -> (
