@@ -172,6 +172,11 @@ toggle_scroll() -> (
 	global_toggle_scroll = !global_toggle_scroll;
 );
 
+vert_grid_res(n) -> (
+	global_vert_grid_stride = n;
+	rebuild_canvas_shapes();
+);
+
 do_draw() -> (
 	if ((tick_time() % global_canvas_refresh) == 0, draw_shape(global_canvas_shapes));
 	if (global_collect_enable, run_probes());
@@ -202,5 +207,9 @@ __config() -> {
 		'reset' -> 'reset',
 		'single' -> 'single_recording',
 		'trigger <name>' -> 'set_trigger',
+		'vgrid <ticks>' -> 'vert_grid_res', 
+	},
+	'arguments' -> {
+		'ticks' -> { 'type' -> 'int', 'min' -> 1, 'max' -> 200},
 	},
 };
