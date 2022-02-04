@@ -41,10 +41,13 @@ global_probe_colors = [
 	0x00ffff9f,
 ];
 
+// Just some fun for the showcase video, there should be no reason to ever use this in reality.
 global_scale_probe_last = -1;
 global_scale_probe_enabled = false;
 global_scale_probe = [0,0,0];
-	
+global_draw_probe = [0,0,0];
+global_draw_probe_enabled = false;
+
 create(pos) -> (
 	global_scope_pos = pos + [-0.1,0,0];
 	global_enabled = true;
@@ -194,6 +197,11 @@ scale_probe(pos) -> (
 	global_canvas_refresh = 4;
 );
 
+draw_enable_probe(pos) -> (
+	global_draw_probe_enabled = true;
+	global_draw_probe = pos;
+);
+
 do_draw() -> (
 	if ((tick_time() % global_canvas_refresh) == 0, (
 		if(global_scale_probe_enabled && power(global_scale_probe) != global_scale_probe_last, (
@@ -220,6 +228,7 @@ __on_tick() -> (
 	if (!global_enabled, return());
 	in_dimension(global_dim, (
 		if (global_collect_enable, run_probes());
+		if (global_draw_probe_enabled, global_draw_enable = (power(global_draw_probe) != 0));
 		if (global_draw_enable, do_draw());
 	));
 
@@ -237,8 +246,9 @@ __config() -> {
 		'single' -> 'single_recording',
 		'trigger <name>' -> 'set_trigger',
 		'vgrid <ticks>' -> 'vert_grid_res', 
-		'sprobe <pos>' -> 'scale_probe',
 		'toggle_draw' -> 'toggle_draw',
+		'sprobe <pos>' -> 'scale_probe',
+		'dprobe <pos>' -> 'draw_enable_probe',
 	},
 	'arguments' -> {
 		'ticks' -> { 'type' -> 'int', 'min' -> 1, 'max' -> 200},
