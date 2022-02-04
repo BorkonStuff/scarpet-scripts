@@ -36,29 +36,35 @@ probe_color(i) -> (
 	global_probe_colors:(i % length(global_probe_colors));
 );
 
+
+// Scale and translate the internal [0,0,0] -> [1,16,21] rendering range to whatever ends up rendered in the world.
+p(pos) -> (
+	global_scope_pos + pos;
+);
+
 rebuild_canvas_shapes() -> (
 	global_canvas_shapes = [];
 	for(range(global_buf_sz/10 + 1),
 		global_canvas_shapes += [
 			'line', global_canvas_refresh,
 			'color', global_grid_color,
-			'from', global_scope_pos + [0, 0, _i * 10 * global_render_step],
-			'to', global_scope_pos + [0, 16, _i * 10 * global_render_step],
+			'from', p([0, 0, _i * 10 * global_render_step]),
+			'to', p([0, 16, _i * 10 * global_render_step]),
 		]
 	);
 	for(range(17),
 		global_canvas_shapes += [
 			'line', global_canvas_refresh,
 			'color', global_grid_color,
-			'from', global_scope_pos + [0,_i, 0],
-			'to', global_scope_pos + [0,_i, global_buf_sz * global_render_step],
+			'from', p([0,_i, 0]),
+			'to', p([0,_i, global_buf_sz * global_render_step]),
 		]
 	);
 
 	for(values(global_probes),
 		global_canvas_shapes += [
 			'label', global_canvas_refresh,
-			'pos', global_scope_pos + [0, 15 - _i, global_buf_sz * global_render_step + 1],
+			'pos', p([0, 15 - _i, global_buf_sz * global_render_step + 1]),
 			'color', probe_color(_i),
 			'text', _:'name',
 			'size', 15,
@@ -66,8 +72,8 @@ rebuild_canvas_shapes() -> (
 		global_canvas_shapes += [
 			'line', global_canvas_refresh,
 			'color', probe_color(_i),
-			'from', global_scope_pos + [0, 15 - _i, global_buf_sz * global_render_step + 1],
-			'to', _:'pos',
+			'from', p([0, 15 - _i, global_buf_sz * global_render_step + 1]),
+			'to', _:'pos' + [0.5,0.5,0.5],
 		];
 	);
 );
@@ -106,8 +112,8 @@ draw_probe(pbuf, o, color) -> (
 		shapes += [
 			'line', 1,
 			'color', color,
-			'from', global_scope_pos + lastpos,
-			'to', global_scope_pos + pos,
+			'from', p(lastpos),
+			'to', p(pos),
 		];
 		lastpos = pos;
 	));
