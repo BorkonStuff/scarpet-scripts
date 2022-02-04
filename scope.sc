@@ -2,18 +2,21 @@ global_scope_pos = [0,0,0];
 global_enabled = false;
 global_dim = null;
 
+// Size of probe recording buffer, in ticks.
 global_buf_sz = 200;
 global_buf_off = 0;
 
 global_probes = {};
 
 global_canvas_shapes = [];
+// Minor optimization to avoid redrawing grid lines (and a few other things) every tick.
 global_canvas_refresh = 20;
 
 global_toggle_scroll = true;
 global_single_mode = false;
 global_collect_enable = true;
 
+// color of the grid lines, a little bit of transparency seems to make things look just a tiny bit better.
 global_grid_color = 0x0000009f;
 
 // scale internal coordinates to world coordinates, the three scalars in the vector are:
@@ -26,6 +29,7 @@ global_scale_vec = [1,1,0.1];
 global_vert_grid_stride = 10;
 
 
+// Predefined palette for probe line colors. 6 ought to be enough for everybody.
 global_probe_colors = [
 	0xff00009f,
 	0x00ff009f,
@@ -56,11 +60,7 @@ p(pos) -> (
 rebuild_canvas_shapes() -> (
 	global_canvas_shapes = [];
 
-	global_vert_grid_stride = 10;
-
 	nlines = global_buf_sz/global_vert_grid_stride;
-
-	global_scale_vec = [1,1,0.1];
 
 	for(range(nlines + 1),
 		global_canvas_shapes += [
