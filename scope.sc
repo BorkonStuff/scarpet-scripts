@@ -13,13 +13,15 @@ global_canvas_refresh = 20;
 
 global_toggle_scroll = true;
 
+global_grid_color = 0x0000009f;
+
 global_probe_colors = [
-	0xff0000ff,
-	0x00ff00ff,
-	0x0000ffff,
-	0xff00ffff,
-	0xffff00ff,
-	0x00ffffff,
+	0xff00009f,
+	0x00ff009f,
+	0x0000ff9f,
+	0xff00ff9f,
+	0xffff009f,
+	0x00ffff9f,
 ];
 	
 create(pos) -> (
@@ -35,7 +37,7 @@ rebuild_canvas_shapes() -> (
 	for(range(global_buf_sz/10 + 1),
 		global_canvas_shapes += [
 			'line', global_canvas_refresh,
-			'color', 0x000000ff,
+			'color', global_grid_color,
 			'from', global_scope_pos + [0, 0, _i * 10 * global_render_step],
 			'to', global_scope_pos + [0, 16, _i * 10 * global_render_step],
 		]
@@ -43,7 +45,7 @@ rebuild_canvas_shapes() -> (
 	for(range(17),
 		global_canvas_shapes += [
 			'line', global_canvas_refresh,
-			'color', 0x000000ff,
+			'color', global_grid_color,
 			'from', global_scope_pos + [0,_i, 0],
 			'to', global_scope_pos + [0,_i, global_buf_sz * global_render_step],
 		]
