@@ -12,6 +12,8 @@ global_canvas_shapes = [];
 global_canvas_refresh = 20;
 
 global_toggle_scroll = true;
+global_single_mode = false;
+global_collect_enable = true;
 
 global_grid_color = 0x0000009f;
 
@@ -78,6 +80,15 @@ rebuild_canvas_shapes() -> (
 	);
 );
 
+
+// Activate a single 200 (global_buf_sz) tick recording of signals and then stop.
+single_recording() -> (
+	// Empty all buffers
+	for (values(global_probes), _:'buf' = map(_:'buf', 0));
+	global_buf_off = 0;
+	global_single_mode = true;
+);
+
 probe(pos, name) -> (
 	b = [];
 	for(range(global_buf_sz), b += 0);
@@ -96,10 +107,14 @@ stop() -> (
 run_probes() -> (
 	o = global_buf_off;
 	global_buf_off = (o + 1) % global_buf_sz;
-	for(values(global_probes), (
-		_:'buf':o = power(_:'pos');
+	if (global_buf_off == 0 && global_single_mode, global_collect_enable = false);
+	for(values(global_probes), _:'buf':o = power(_:'pos'));
+);
+
+draw_probes() -> (
+	for (values(global_probes),
 		draw_probe(_:'buf', global_buf_off, global_probe_colors:(_i % length(global_probe_colors)));
-	));
+	);
 );
 
 draw_probe(pbuf, o, color) -> (
@@ -126,7 +141,14 @@ toggle_scroll() -> (
 
 do_draw() -> (
 	if ((tick_time() % global_canvas_refresh) == 0, draw_shape(global_canvas_shapes));
-	run_probes();
+	if (global_collect_enable, run_probes());
+	draw_probes();
+);
+
+reset() -> (
+	global_toggle_scroll = true;
+	global_collect_enable = true;
+	global_single_mode = false;
 );
 
 __on_tick() -> (
@@ -142,5 +164,7 @@ __config() -> {
 		'stop' -> 'stop',
 		'probe <pos> <name>' -> 'probe',
 		'toggle_scroll' -> 'toggle_scroll',
+		'reset' -> 'reset',
+		'single' -> 'single_recording',
 	},
 };
