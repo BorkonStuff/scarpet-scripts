@@ -33,14 +33,14 @@ Explanation video: https://youtu.be/tLIje9-RxN8
 The commands are:
  - `/scope pos <pos>` - set the coordinates for the lower left block of the display, the display is currently always facing in the negative z direction.
  - `/scope stop` - stop everything, both data collection and rendering.
- - `/scope probe <pos> <name>` - measure block power levels at position <pos>.
+ - `/scope probe <pos> <name>` - measure block power levels at position `<pos>`.
  - `/scope toggle_scroll` - toggle between scrolling and sweeping the display.
  - `/scope reset` - resets all data and sets all display options to defaults.
  - `/scope single` - perform a single recording of 200 ticks and freeze.
- - `/scope trigger <name>` - trigger a single recording when the probe called <name> reads >0.
+ - `/scope trigger <name>` - trigger a single recording when the probe called `<name>` reads >0.
  - `/scope vgrid` - change the density of vertical grid lines. Default is 10, which gives us one grid line per 10 ticks of recorded data.
  - `/scope toggle_draw` - toggle rendering of the display while not affecting if the data is recorded.
- - `/scope sprobe <pos>` - power level of the block at <pos> decides the scaling of the display (0-smallest, 8-normal size).
- - `/scope dprobe <pos>` - power level of the block at <pos> toggles rendering.
+ - `/scope sprobe <pos>` - power level of the block at `<pos>` decides the scaling of the display (0-smallest, 8-normal size).
+ - `/scope dprobe <pos>` - power level of the block at `<pos>` toggles rendering.
 
 Explanation video: https://youtu.be/Hq32fcvOdVw
