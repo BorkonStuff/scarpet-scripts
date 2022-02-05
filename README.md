@@ -38,7 +38,7 @@ The commands are:
  - `/scope reset` - resets all data and sets all display options to defaults.
  - `/scope single` - perform a single recording of 200 ticks and freeze.
  - `/scope trigger <name>` - trigger a single recording when the probe called `<name>` reads >0.
- - `/scope vgrid` - change the density of vertical grid lines. Default is 10, which gives us one grid line per 10 ticks of recorded data.
+ - `/scope vgrid <ticks>` - change the density of vertical grid lines. Default is 10, which gives us one grid line per 10 ticks of recorded data.
  - `/scope toggle_draw` - toggle rendering of the display while not affecting if the data is recorded.
  - `/scope sprobe <pos>` - power level of the block at `<pos>` decides the scaling of the display (0-smallest, 8-normal size).
  - `/scope dprobe <pos>` - power level of the block at `<pos>` toggles rendering.
