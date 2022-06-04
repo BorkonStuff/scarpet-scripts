@@ -8,7 +8,7 @@ You need the [Carpet mod](https://www.curseforge.com/minecraft/mc-mods/carpet) t
 
 ## Voids
 
-** This is now dead in 1.18.2, dimensions created earlier will still work, but the carpet mod removed the interface that was used for creating new dimensions, so that is no longer possible. **
+**This is now dead in 1.18.2, dimensions created earlier will still work, but the carpet mod removed the interface that was used for creating new dimensions, so that is no longer possible.**
 
 [voids.sc](voids.sc) contains the creative tool for managing multiple dimensions inside one creative world.
 The commands it provides are:
