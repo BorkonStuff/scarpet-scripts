@@ -72,8 +72,8 @@ __config() -> {
     'scope' -> 'global',
     'stay_loaded' -> true,
     'commands' -> {
-        'add <name>' -> [ 'add', 'minecraft:plains' ],
-	'add <name> <biome>' -> 'add',
+        'add <name>' -> [ 'add', 'minecraft:the_void' ],
+	    'add <name> <biome>' -> 'add',
 	    'disable <disable_dim>' -> 'disable',
         'list' -> 'list',
         'tp <string>' -> 'tp', 
