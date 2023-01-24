@@ -22,23 +22,29 @@ add(name,biome) -> (
     create_datapack(dimname, {
         'data' -> { 'minecraft' -> { 'dimension' -> { dimname + '.json' -> { 
             'type' -> 'minecraft:overworld',
-	    'generator' -> {
-		'type' -> 'minecraft:flat',
-		'settings' -> {
-		    'layers' -> [],
-		    'biome' -> biome,
-		    'structures' -> {
-			'structures' -> {}
-		    }
-		}
-	    }
-    }}}}});
-    enable_hidden_dimensions();
-    in_dimension(dimname, set(0, 63, 0, block('stone')));   
+	        'generator' -> {
+		        'type' -> 'minecraft:flat',
+		        'settings' -> {
+		            'layers' -> [],
+		            'biome' -> biome,
+		            'structure_overrides' -> 'minecraft:end_cities'
+		        }
+	        }
+        }
+    }}}});
     put(dims, name, dimname);
     put(global_settings, 'dimensions', dims);
     save_settings();
     print_dim(name, dimname);
+);
+
+disable(name) -> (
+    dims = get(global_settings, 'dimensions');
+    if (!has(dims, name), _error('Dimension does not exist'));
+    delete(dims, name);
+    put(global_settings, 'dimensions', dims);
+    save_settings();
+    print(name + ' successfully disabled')
 );
 
 print_dim(name, dimname) -> (
@@ -65,13 +71,28 @@ __config() -> {
     'scope' -> 'global',
     'stay_loaded' -> true,
     'commands' -> {
-        'add <name>' -> [ 'add', 'minecraft:plains' ],
-	'add <name> <biome>' -> 'add',
+        'add <name>' -> [ 'add', 'minecraft:the_void' ],
+	    'add <name> <biome>' -> 'add',
+	    'disable <disable_dim>' -> 'disable',
         'list' -> 'list',
-        'tp <string>' -> 'tp', 
+        'tp <tp_dim>' -> 'tp', 
     },
     'arguments' -> {
         'name' -> { 'type' -> 'string' },
         'biome' -> { 'type' -> 'biome', 'suggest' -> biome() },
+        'tp_dim' -> {
+            'type' -> 'term', 
+            'suggester' -> _(args) -> (
+                dims_suggest = get(global_settings, 'dimensions');
+                for({'overworld', 'the_nether', 'the_end'}, put(dims_suggest, _, _));
+                keys(dims_suggest);
+            ),
+        },
+        'disable_dim' -> {
+            'type' -> 'term', 
+            'suggester' -> _(args) -> (
+                keys(get(global_settings, 'dimensions'));
+            ),
+        }
     },
 };
