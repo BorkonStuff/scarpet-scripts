@@ -22,17 +22,16 @@ add(name,biome) -> (
     create_datapack(dimname, {
         'data' -> { 'minecraft' -> { 'dimension' -> { dimname + '.json' -> { 
             'type' -> 'minecraft:overworld',
-	    'generator' -> {
-		'type' -> 'minecraft:flat',
-		'settings' -> {
-		    'layers' -> [],
-		    'biome' -> biome,
-		    'structures' -> {
-			'structures' -> {}
-		    }
-		}
-	    }
-    }}}}});
+	        'generator' -> {
+		        'type' -> 'minecraft:flat',
+		        'settings' -> {
+		            'layers' -> [],
+		            'biome' -> biome,
+		            'structure_overrides' -> 'minecraft:end_cities'
+		        }
+	        }
+        }
+    }}}});
     put(dims, name, dimname);
     put(global_settings, 'dimensions', dims);
     save_settings();
