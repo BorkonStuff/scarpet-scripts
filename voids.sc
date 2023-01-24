@@ -39,6 +39,15 @@ add(name,biome) -> (
     print_dim(name, dimname);
 );
 
+disable(name) -> (
+    dims = get(global_settings, 'dimensions');
+    if (!has(dims, name), _error('Dimension does not exist'));
+    delete(dims, name);
+    put(global_settings, 'dimensions', dims);
+    save_settings();
+    print(name + ' successfully disabled')
+);
+
 print_dim(name, dimname) -> (
     print(player(), format(str('d %s', name), str('^mi Teleport to %s', name), str('!/execute in %s run tp %s 0 65 0', dimname, player())))
 );
@@ -65,11 +74,18 @@ __config() -> {
     'commands' -> {
         'add <name>' -> [ 'add', 'minecraft:plains' ],
 	'add <name> <biome>' -> 'add',
+	    'disable <disable_dim>' -> 'disable',
         'list' -> 'list',
         'tp <string>' -> 'tp', 
     },
     'arguments' -> {
         'name' -> { 'type' -> 'string' },
         'biome' -> { 'type' -> 'biome', 'suggest' -> biome() },
+        'disable_dim' -> {
+            'type' -> 'term', 
+            'suggester' -> _(args) -> (
+                keys(get(global_settings, 'dimensions'));
+            ),
+        }
     },
 };
