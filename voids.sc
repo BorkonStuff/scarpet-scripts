@@ -33,8 +33,6 @@ add(name,biome) -> (
 		}
 	    }
     }}}}});
-    enable_hidden_dimensions();
-    in_dimension(dimname, set(0, 63, 0, block('stone')));   
     put(dims, name, dimname);
     put(global_settings, 'dimensions', dims);
     save_settings();
