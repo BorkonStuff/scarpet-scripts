@@ -75,11 +75,19 @@ __config() -> {
 	    'add <name> <biome>' -> 'add',
 	    'disable <disable_dim>' -> 'disable',
         'list' -> 'list',
-        'tp <string>' -> 'tp', 
+        'tp <tp_dim>' -> 'tp', 
     },
     'arguments' -> {
         'name' -> { 'type' -> 'string' },
         'biome' -> { 'type' -> 'biome', 'suggest' -> biome() },
+        'tp_dim' -> {
+            'type' -> 'term', 
+            'suggester' -> _(args) -> (
+                dims_suggest = get(global_settings, 'dimensions');
+                for({'overworld', 'the_nether', 'the_end'}, put(dims_suggest, _, _));
+                keys(dims);
+            ),
+        },
         'disable_dim' -> {
             'type' -> 'term', 
             'suggester' -> _(args) -> (
