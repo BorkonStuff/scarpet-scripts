@@ -85,7 +85,7 @@ __config() -> {
             'suggester' -> _(args) -> (
                 dims_suggest = get(global_settings, 'dimensions');
                 for({'overworld', 'the_nether', 'the_end'}, put(dims_suggest, _, _));
-                keys(dims);
+                keys(dims_suggest);
             ),
         },
         'disable_dim' -> {
